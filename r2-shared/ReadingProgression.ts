@@ -1,0 +1,1 @@
+export type ReadingProgression = "auto" | "btt" | "ltr" | "rtl" | "ttb";
