@@ -3,7 +3,11 @@ import { Properties } from "./epub/Properties"
 import { Orientation, Overflow, Page, Spread} from "./presentation/Presentation";
 import { IEncrypted } from "./Encrypted";
 
-type LinkRel = "alternate" | "contents" | "cover" | "manifest" | "search" | "self";
+/*  
+    Keeping as ref list of values we know are currently used, per webpub doc:
+    https://github.com/readium/webpub-manifest/blob/master/relationships.md
+    type LinkRel = "alternate" | "contents" | "cover" | "manifest" | "search" | "self"; 
+*/
 
 interface ILinkProperties {
   contains?: Array<Properties>;
@@ -21,7 +25,7 @@ export interface ILink {
   templated?: boolean;
   type?: string;
   title?: string;
-  rel?: LinkRel;
+  rel?: string;
   properties?: ILinkProperties;
   height?: number;
   width?: number;
