@@ -2,6 +2,7 @@ import { IContributor} from "./Contributor";
 import { ReadingProgression } from "./ReadingProgression";
 import { ISubject } from "./Subject";
 import { LocalizedString } from "./LocalizedString";
+import { IPresentationMetadata } from "./presentation/Presentation";
 
 interface ICollection extends IContributor {
   position?: number;
@@ -42,4 +43,5 @@ export interface IMetadata {
   duration?: number;
   numberOfPages?: number;
   abridged?: boolean;
+  presentation?: IPresentationMetadata;
 }

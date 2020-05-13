@@ -1,6 +1,5 @@
-import { Layout } from "./epub/Layout";
 import { Properties } from "./epub/Properties"
-import { Orientation, Overflow, Page, Spread} from "./presentation/Presentation";
+import { IPresentationProperties } from "./presentation/Presentation";
 import { IEncrypted } from "./Encrypted";
 
 /*  
@@ -9,15 +8,10 @@ import { IEncrypted } from "./Encrypted";
     type LinkRel = "alternate" | "contents" | "cover" | "manifest" | "search" | "self"; 
 */
 
-interface ILinkProperties {
+interface ILinkProperties extends IPresentationProperties {
   contains?: Array<Properties>;
   encrypted?: IEncrypted;
-  layout?: Layout;
   mediaOverlay?: string;
-  orientation?: Orientation;
-  overflow?: Overflow;
-  page?: Page;
-  spread?: Spread;
 }
 
 export interface ILink {

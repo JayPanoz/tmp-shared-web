@@ -19,6 +19,6 @@ export interface IPresentationMetadata extends IPresentation {
   overflow?: Overflow;
 }
 
-export interface IPresentationProperty extends IPresentation {
+export interface IPresentationProperties extends IPresentation {
   page?: Page;
 }
