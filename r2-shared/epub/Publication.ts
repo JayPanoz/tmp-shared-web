@@ -4,10 +4,10 @@ import { Link } from "../Link";
 export default class EPUBPublication extends Publication {
   public readonly pageList?: Array<Link>;
   public readonly landmarks?: Array<Link>;
-  public readonly loa?: Array<Link>;
-  public readonly loi?: Array<Link>;
-  public readonly lot?: Array<Link>;
-  public readonly lov?: Array<Link>;
+  public readonly listOfAudioClips?: Array<Link>;
+  public readonly listOfIllustrations?: Array<Link>;
+  public readonly listOfTables?: Array<Link>;
+  public readonly listOfVideoClips?: Array<Link>;
 
   constructor(manifestJSON: any, manifestURL: string) {
     super(
@@ -16,9 +16,9 @@ export default class EPUBPublication extends Publication {
     )
     this.pageList = manifestJSON.pageList || [];
     this.landmarks = manifestJSON.landmarks || [];
-    this.loa = manifestJSON.loa || [];
-    this.loi = manifestJSON.loi || [];
-    this.lot = manifestJSON.lot || [];
-    this.lov = manifestJSON.lov || [];
+    this.listOfAudioClips = manifestJSON.loa || [];
+    this.listOfIllustrations = manifestJSON.loi || [];
+    this.listOfTables = manifestJSON.lot || [];
+    this.listOfVideoClips = manifestJSON.lov || [];
   }
 }
