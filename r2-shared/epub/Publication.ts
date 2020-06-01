@@ -9,7 +9,7 @@ export default class EPUBPublication extends Publication {
   public readonly listOfTables?: Array<Link>;
   public readonly listOfVideoClips?: Array<Link>;
 
-  constructor(manifestJSON: any, manifestURL: string) {
+  constructor(manifestJSON: any, manifestURL?: string) {
     super(
       manifestJSON,
       manifestURL
