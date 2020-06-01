@@ -1,6 +1,6 @@
-import { Properties } from "./epub/Properties"
-import { IPresentationProperties } from "./presentation/Presentation";
-import { IEncrypted } from "./Encrypted";
+import { Properties } from "./epub/Properties";
+import { PresentationProperties } from "./presentation/Presentation";
+import { Encrypted } from "./Encrypted";
 
 /*  
     Keeping as ref list of values we know are currently used, per webpub doc:
@@ -8,24 +8,24 @@ import { IEncrypted } from "./Encrypted";
     type LinkRel = "alternate" | "contents" | "cover" | "manifest" | "search" | "self"; 
 */
 
-interface ILinkProperties extends IPresentationProperties {
+interface LinkProperties extends PresentationProperties {
   contains?: Array<Properties>;
-  encrypted?: IEncrypted;
+  encrypted?: Encrypted;
   mediaOverlay?: string;
 }
 
-export interface ILink {
+export interface Link {
   href: string;
   templated?: boolean;
   type?: string;
   title?: string;
   rel?: string;
-  properties?: ILinkProperties;
+  properties?: LinkProperties;
   height?: number;
   width?: number;
   duration?: number;
   bitrate?: number;
   language?: string;
-  alternate?: Array<ILink>;
-  children?: Array<ILink>;
+  alternate?: Array<Link>;
+  children?: Array<Link>;
 }

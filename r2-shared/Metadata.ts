@@ -2,21 +2,21 @@ import { IContributor} from "./Contributor";
 import { ReadingProgression } from "./ReadingProgression";
 import { ISubject } from "./Subject";
 import { LocalizedString } from "./LocalizedString";
-import { IPresentationMetadata } from "./presentation/Presentation";
+import { PresentationMetadata } from "./presentation/Presentation";
 
-interface ICollection extends IContributor {
+interface Collection extends IContributor {
   position?: number;
 }
 
-interface ICollections {
-  collection?: string | ICollection;
-  series?: string | ICollection;
+interface Collections {
+  collection?: string | Collection;
+  series?: string | Collection;
 }
 
 type Contributor = string | IContributor | Array<string | IContributor>;
 type Subject = string | ISubject | Array<string | ISubject>;
 
-export interface IMetadata {
+export interface Metadata {
   identifier: string;
   title: string | LocalizedString;
   subtitle?: string | LocalizedString;
@@ -38,10 +38,10 @@ export interface IMetadata {
   published?: string;
   modified?: string;
   subject?: Subject;
-  belongsTo?: ICollections;
+  belongsTo?: Collections;
   readingProgression?: ReadingProgression;
   duration?: number;
   numberOfPages?: number;
   abridged?: boolean;
-  presentation?: IPresentationMetadata;
+  presentation?: PresentationMetadata;
 }

@@ -1,34 +1,34 @@
-interface IText {
+interface LocatorText {
   after?: string;
   before?: string;
   highlight?: string;
 }
 
-interface IStartEnd {
+interface StartEndInfo {
   cssSelector: string;
   textNodeIndex: number;
   charOffset?: number;
 }
 
-interface IDomRange {
-  start: IStartEnd;
-  end?: IStartEnd;
+interface DomRangeInfo {
+  start: StartEndInfo;
+  end?: StartEndInfo;
 }
 
-interface ILocations {
+interface Locations {
   fragments?: Array<string>;
   progression?: number;
   position?: number;
   totalProgression?: number;
   cssSelector?: string;
   partialCfi?: string;
-  domRange?: IDomRange;
+  domRange?: DomRangeInfo;
 }
 
-export interface ILocator {
+export interface Locator {
   href: string;
   type: string;
   title?: string;
-  locations?: ILocations;
-  text?: IText;
+  locations?: Locations;
+  text?: LocatorText;
 }

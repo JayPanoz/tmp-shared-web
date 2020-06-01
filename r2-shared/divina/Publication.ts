@@ -1,6 +1,6 @@
-import { IPublication } from "../Publication";
-import { ILink } from "../Link";
+import { Publication } from "../Publication";
+import { Link } from "../Link";
 
-export interface IDivinaPublication extends IPublication {
-  guided?: Array<ILink>;
+export interface DivinaPublication extends Publication {
+  guided?: Array<Link>;
 }

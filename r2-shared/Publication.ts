@@ -1,11 +1,11 @@
-import { IMetadata } from "./Metadata";
-import { ILink } from "./Link";
+import { Metadata } from "./Metadata";
+import { Link } from "./Link";
 
-export interface IPublication {
+export interface Publication {
   context: Array<string>;
-  metadata: IMetadata;
-  links: Array<ILink>;
-  readingOrder?: Array<ILink>;
-  resources?: Array<ILink>;
-  toc?: Array<ILink>;
+  metadata: Metadata;
+  links: Array<Link>;
+  readingOrder?: Array<Link>;
+  resources?: Array<Link>;
+  toc?: Array<Link>;
 }

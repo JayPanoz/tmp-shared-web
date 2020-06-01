@@ -6,7 +6,7 @@ export type Page = "left" | "right" | "center";
 export type Spread = "auto" | "both" | "none" | "landscape";
 export type Fit = "contain" | "cover" | "width" | "height";
 
-interface IPresentation {
+interface Presentation {
   clipped?: boolean;
   fit?: Fit;
   orientation?: Orientation;
@@ -14,11 +14,11 @@ interface IPresentation {
   layout?: Layout;
 }
 
-export interface IPresentationMetadata extends IPresentation {
+export interface PresentationMetadata extends Presentation {
   continuous?: boolean;
   overflow?: Overflow;
 }
 
-export interface IPresentationProperties extends IPresentation {
+export interface PresentationProperties extends Presentation {
   page?: Page;
 }

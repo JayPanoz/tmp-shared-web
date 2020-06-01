@@ -1,4 +1,4 @@
-export interface IEncrypted {
+export interface Encrypted {
   algorithm: string;
   compression?: string;
   originalLength?: number;
