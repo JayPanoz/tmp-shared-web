@@ -99,6 +99,9 @@ export default class Publication {
 
   public hrefFromURL(url: string): string {
     const urlObject = new URL(url);
+    for (const p of urlObject.searchParams) {
+      urlObject.searchParams.delete(p[0]);
+    }
     let result = urlObject.href;
     if (result.includes(this.baseURL)) {
       result = result.split(this.baseURL)[1];
