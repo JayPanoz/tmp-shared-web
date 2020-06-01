@@ -9,7 +9,7 @@ export default class EPUBPublication extends Publication {
   public readonly lot?: Array<Link>;
   public readonly lov?: Array<Link>;
 
-  constructor(manifestJSON: any, manifestURL: URL) {
+  constructor(manifestJSON: any, manifestURL: string) {
     super(
       manifestJSON,
       manifestURL

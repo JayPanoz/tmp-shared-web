@@ -9,16 +9,16 @@ export default class Publication {
   public readonly resources?: Array<Link>;
   public readonly toc?: Array<Link>;
 
-  public readonly manifestURL: URL;
+  public readonly baseURL: string;
 
-  constructor(manifestJSON: any, manifestURL: URL) {
+  constructor(manifestJSON: any, manifestURL: string) {
     this.context = manifestJSON["@context"] || [];
     this.metadata = manifestJSON.metadata || {};
     this.links = manifestJSON.links || [];
     this.readingOrder = manifestJSON.readingOrder || [];
     this.resources = manifestJSON.resources || [];
     this.toc = manifestJSON.toc || [];
-    
-    this.manifestURL = manifestURL;
+
+    this.baseURL = manifestURL;
   }
 }
