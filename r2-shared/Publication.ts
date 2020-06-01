@@ -14,6 +14,8 @@ export default class Publication {
   public readonly resources?: Array<Link>;
   public readonly toc?: Array<Link>;
 
+  private readonly allLinks: Array<Link>;
+
   public readonly baseURL: string;
 
   constructor(manifestJSON: any, manifestURL?: string) {
@@ -23,6 +25,8 @@ export default class Publication {
     this.readingOrder = manifestJSON.readingOrder || [];
     this.resources = manifestJSON.resources || [];
     this.toc = manifestJSON.toc || [];
+
+    this.allLinks = this.readingOrder.concat(this.resources, this.links);
 
     this.baseURL = manifestURL || this.getSelfLink();
   }
@@ -107,5 +111,27 @@ export default class Publication {
       result = result.split(this.baseURL)[1];
     }
     return result;
+  }
+
+  // Link Helpers
+
+  public linksMatching(predicate: any): Array<Link> {
+    return this.allLinks.filter(predicate);
+  }
+
+  public linkMatching(predicate: any): Link | undefined {
+    return this.allLinks.find(predicate); 
+  }
+
+  public linkFromURL(href: string): Link | undefined {
+    return this.allLinks.find(el => el.href === href);
+  }
+
+  public linksWithRel(rel: string): Array<Link> {
+    return this.allLinks.filter(el => el.rel === rel);
+  }
+
+  public linkWithRel(rel: string): Link | undefined {
+    return this.allLinks.find(el => el.rel === rel);
   }
 }
