@@ -1,10 +1,13 @@
 import { Metadata } from "./Metadata";
 import { Link } from "./Link";
 import { Locator } from "./Locator";
+import { ReadingProgression } from "./ReadingProgression";
 
 interface URLParams {
   [param: string]: string
 }
+
+const rtlLanguages = ["ar", "fa", "he"];
 
 export default class Publication {
   public readonly context: Array<string>;
@@ -38,11 +41,12 @@ export default class Publication {
 
   // readingOrder Helpers
 
-  private trimType(mediaType?: string): string {
-    if (mediaType) {
-      const components = mediaType.split(";");
+  private trimString(string: string, chars: string): string {
+    if (typeof string === "string") {
+      const components = string.split(chars);
       return components[0];
     }
+    return "";
   }
 
   public anyReadingOrder(predicate: any, key?: string): boolean {
@@ -70,17 +74,17 @@ export default class Publication {
 
   public allReadingOrderIsHTML(): boolean {
     const mediaTypes = ["text/html", "application/xhtml+xml"];
-    const predicate = (el: Link) => mediaTypes.includes(this.trimType(el.type));
+    const predicate = (el: Link) => mediaTypes.includes(this.trimString(el.type, ";"));
     return this.allReadingOrder(predicate);
   }
 
   public allReadingOrderMatchesMediaType(mediaType: string): boolean {
-    const predicate = (el: Link) => this.trimType(el.type) === mediaType;
+    const predicate = (el: Link) => this.trimString(el.type, ";") === mediaType;
     return this.allReadingOrder(predicate);
   }
 
   public allReadingOrderMatchesAnyOfMediaType(mediaType: Array<string>): boolean {
-    const predicate = (el: Link) => mediaType.includes(this.trimType(el.type)) ;
+    const predicate = (el: Link) => mediaType.includes(this.trimString(el.type, ";")) ;
     return this.allReadingOrder(predicate);
   }
 
@@ -133,5 +137,20 @@ export default class Publication {
 
   public linkWithRel(rel: string): Link | undefined {
     return this.allLinks.find(el => el.rel === rel);
+  }
+
+  // Presentation Helpers
+
+  public effectiveReadingProgression(): ReadingProgression {
+    if (this.metadata.readingProgression && this.metadata.readingProgression !== "auto") {
+      return this.metadata.readingProgression;
+    } else {
+      if (this.metadata.language.length > 0) {
+        const lang = this.trimString(this.metadata.language[0], "");
+        if (rtlLanguages.includes(lang)) {
+          return "rtl";
+        }
+      }
+    }
   }
 }
