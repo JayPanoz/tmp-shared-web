@@ -118,6 +118,7 @@ export default class Publication {
   }
 
   // Link Helpers
+  // Note: alternate and children checking
 
   public linksMatching(predicate: any): Array<Link> {
     return this.allLinks.filter(predicate);
@@ -127,7 +128,12 @@ export default class Publication {
     return this.allLinks.find(predicate); 
   }
 
-  public linkFromURL(href: string): Link | undefined {
+  public linkFromURL(url: string): Link | undefined {
+    const href = this.hrefFromURL(url);
+    return this.linkWithHREF(href);
+  }
+
+  public linkWithHREF(href: string): Link | undefined {
     return this.allLinks.find(el => el.href === href);
   }
 
@@ -137,6 +143,14 @@ export default class Publication {
 
   public linkWithRel(rel: string): Link | undefined {
     return this.allLinks.find(el => el.rel === rel);
+  }
+
+  public linksMatchingMediaType(mediaType: string): Array<Link> {
+    return this.allLinks.filter(el => this.trimString(el.type, ";") === mediaType);
+  }
+
+  public linkMatchingMediaType(mediaType: string): Link | undefined {
+    return this.allLinks.find(el => this.trimString(el.type, ";") === mediaType);
   }
 
   // Presentation Helpers
