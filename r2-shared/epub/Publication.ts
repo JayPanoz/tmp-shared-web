@@ -1,5 +1,6 @@
 import Publication from "../Publication";
 import { Link } from "../Link";
+import { Layout } from "./Layout";
 
 export default class EPUBPublication extends Publication {
   public readonly pageList?: Array<Link>;
@@ -20,5 +21,15 @@ export default class EPUBPublication extends Publication {
     this.listOfIllustrations = manifestJSON.loi || [];
     this.listOfTables = manifestJSON.lot || [];
     this.listOfVideoClips = manifestJSON.lov || [];
+  }
+
+  public layoutOf(link: Link): Layout {
+    if (link.properties && link.properties.layout) {
+      return link.properties.layout;
+    } else if (this.metadata && this.metadata.presentation && this.metadata.presentation.layout) {
+      return this.metadata.presentation.layout;
+    } else {
+      return "reflowable";
+    }
   }
 }
