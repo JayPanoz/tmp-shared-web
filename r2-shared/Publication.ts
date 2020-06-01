@@ -1,5 +1,10 @@
 import { Metadata } from "./Metadata";
 import { Link } from "./Link";
+import { Locator } from "./Locator";
+
+interface URLParams {
+  [param: string]: string
+}
 
 export default class Publication {
   public readonly context: Array<string>;
@@ -73,5 +78,31 @@ export default class Publication {
   public allReadingOrderMatchesAnyOfMediaType(mediaType: Array<string>): boolean {
     const predicate = (el: Link) => mediaType.includes(this.trimType(el.type)) ;
     return this.allReadingOrder(predicate);
+  }
+
+  // URL Helpers
+
+  public urlToLink(link: Link, parameters?: URLParams): string {
+    const absoluteURL = new URL(link.href, this.baseURL);
+    if (parameters) {
+      for (const p in parameters) {
+        absoluteURL.searchParams.append(p, parameters[p]);
+      }
+    }
+    return absoluteURL.href;
+  }
+
+  public urlToLocator(locator: Locator): string {
+    const absoluteURL = new URL(locator.href, this.baseURL);
+    return absoluteURL.href;
+  }
+
+  public hrefFromURL(url: string): string {
+    const urlObject = new URL(url);
+    let result = urlObject.href;
+    if (result.includes(this.baseURL)) {
+      result = result.split(this.baseURL)[1];
+    }
+    return result;
   }
 }
