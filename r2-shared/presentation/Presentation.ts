@@ -1,4 +1,4 @@
-import { Layout } from "../epub/Layout";
+import { EPUBLayout } from "../epub/Layout";
 
 export type Orientation = "auto" | "landscape" | "portrait";
 export type Overflow = "auto" | "clipped" | "paginated" | "scrolled";
@@ -11,7 +11,7 @@ interface Presentation {
   fit?: Fit;
   orientation?: Orientation;
   spread?: Spread;
-  layout?: Layout;
+  layout?: EPUBLayout;
 }
 
 export interface PresentationMetadata extends Presentation {

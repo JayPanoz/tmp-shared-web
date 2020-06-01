@@ -1,1 +1,1 @@
-export type Layout = "fixed" | "reflowable";
+export type EPUBLayout = "fixed" | "reflowable";

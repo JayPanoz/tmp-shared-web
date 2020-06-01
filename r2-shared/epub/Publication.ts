@@ -1,6 +1,6 @@
 import Publication from "../Publication";
 import { Link } from "../Link";
-import { Layout } from "./Layout";
+import { EPUBLayout } from "./Layout";
 
 export default class EPUBPublication extends Publication {
   public readonly pageList?: Array<Link>;
@@ -23,7 +23,7 @@ export default class EPUBPublication extends Publication {
     this.listOfVideoClips = manifestJSON.lov || [];
   }
 
-  public layoutOf(link: Link): Layout {
+  public layoutOf(link: Link): EPUBLayout {
     if (link.properties && link.properties.layout) {
       return link.properties.layout;
     } else if (this.metadata && this.metadata.presentation && this.metadata.presentation.layout) {
