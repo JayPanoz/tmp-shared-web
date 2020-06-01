@@ -1,1 +1,4 @@
-export type EPUBLayout = "fixed" | "reflowable";
+export enum EPUBLayout {
+  fixed = "fixed",
+  reflowable = "reflowable"
+}

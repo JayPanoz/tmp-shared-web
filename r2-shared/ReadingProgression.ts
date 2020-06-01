@@ -1,1 +1,7 @@
-export type ReadingProgression = "auto" | "btt" | "ltr" | "rtl" | "ttb";
+export enum ReadingProgression { 
+  auto = "auto", 
+  btt = "btt", 
+  ltr = "ltr", 
+  rtl = "rtl", 
+  ttb = "ttb"
+}

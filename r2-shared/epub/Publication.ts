@@ -29,7 +29,7 @@ export default class EPUBPublication extends Publication {
     } else if (this.metadata && this.metadata.presentation && this.metadata.presentation.layout) {
       return this.metadata.presentation.layout;
     } else {
-      return "reflowable";
+      return EPUBLayout.reflowable;
     }
   }
 }

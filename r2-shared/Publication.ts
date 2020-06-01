@@ -2,6 +2,7 @@ import { Metadata } from "./Metadata";
 import { Link } from "./Link";
 import { Locator } from "./Locator";
 import { ReadingProgression } from "./ReadingProgression";
+import * as Utils from "./utils/trimString";
 
 interface URLParams {
   [param: string]: string
@@ -39,15 +40,9 @@ export default class Publication {
     return selfLink.href;
   }
 
-  // readingOrder Helpers
+  // Existing methods go here…
 
-  private trimString(string: string, chars: string): string {
-    if (typeof string === "string") {
-      const components = string.split(chars);
-      return components[0];
-    }
-    return "";
-  }
+  // readingOrder Helpers
 
   public anyReadingOrder(predicate: any, key?: string): boolean {
     return this.readingOrder.some(predicate);
@@ -74,17 +69,17 @@ export default class Publication {
 
   public allReadingOrderIsHTML(): boolean {
     const mediaTypes = ["text/html", "application/xhtml+xml"];
-    const predicate = (el: Link) => mediaTypes.includes(this.trimString(el.type, ";"));
+    const predicate = (el: Link) => mediaTypes.includes(Utils.trimString(el.type, ";"));
     return this.allReadingOrder(predicate);
   }
 
   public allReadingOrderMatchesMediaType(mediaType: string): boolean {
-    const predicate = (el: Link) => this.trimString(el.type, ";") === mediaType;
+    const predicate = (el: Link) => Utils.trimString(el.type, ";") === mediaType;
     return this.allReadingOrder(predicate);
   }
 
   public allReadingOrderMatchesAnyOfMediaType(mediaType: Array<string>): boolean {
-    const predicate = (el: Link) => mediaType.includes(this.trimString(el.type, ";")) ;
+    const predicate = (el: Link) => mediaType.includes(Utils.trimString(el.type, ";")) ;
     return this.allReadingOrder(predicate);
   }
 
@@ -146,23 +141,23 @@ export default class Publication {
   }
 
   public linksMatchingMediaType(mediaType: string): Array<Link> {
-    return this.allLinks.filter(el => this.trimString(el.type, ";") === mediaType);
+    return this.allLinks.filter(el => Utils.trimString(el.type, ";") === mediaType);
   }
 
   public linkMatchingMediaType(mediaType: string): Link | undefined {
-    return this.allLinks.find(el => this.trimString(el.type, ";") === mediaType);
+    return this.allLinks.find(el => Utils.trimString(el.type, ";") === mediaType);
   }
 
   // Presentation Helpers
 
   public effectiveReadingProgression(): ReadingProgression {
-    if (this.metadata.readingProgression && this.metadata.readingProgression !== "auto") {
+    if (this.metadata.readingProgression && this.metadata.readingProgression !== ReadingProgression.auto) {
       return this.metadata.readingProgression;
     } else {
       if (this.metadata.language.length > 0) {
-        const lang = this.trimString(this.metadata.language[0], "");
+        const lang = Utils.trimString(this.metadata.language[0], "");
         if (rtlLanguages.includes(lang)) {
-          return "rtl";
+          ReadingProgression.rtl;
         }
       }
     }
