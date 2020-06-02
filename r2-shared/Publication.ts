@@ -2,7 +2,7 @@ import { Metadata } from "./Metadata";
 import { Link } from "./Link";
 import { Locator } from "./Locator";
 import { ReadingProgression } from "./ReadingProgression";
-import * as Utils from "./utils/trimString";
+import * as Utils from "./utils/splitString";
 
 interface URLParams {
   [param: string]: string
@@ -69,17 +69,17 @@ export default class Publication {
 
   public allReadingOrderIsHTML(): boolean {
     const mediaTypes = ["text/html", "application/xhtml+xml"];
-    const predicate = (el: Link) => mediaTypes.includes(Utils.trimString(el.type, ";"));
+    const predicate = (el: Link) => mediaTypes.includes(Utils.splitString(el.type, ";"));
     return this.allReadingOrder(predicate);
   }
 
   public allReadingOrderMatchesMediaType(mediaType: string): boolean {
-    const predicate = (el: Link) => Utils.trimString(el.type, ";") === mediaType;
+    const predicate = (el: Link) => Utils.splitString(el.type, ";") === mediaType;
     return this.allReadingOrder(predicate);
   }
 
   public allReadingOrderMatchesAnyOfMediaType(mediaType: Array<string>): boolean {
-    const predicate = (el: Link) => mediaType.includes(Utils.trimString(el.type, ";")) ;
+    const predicate = (el: Link) => mediaType.includes(Utils.splitString(el.type, ";")) ;
     return this.allReadingOrder(predicate);
   }
 
@@ -141,11 +141,11 @@ export default class Publication {
   }
 
   public linksMatchingMediaType(mediaType: string): Array<Link> {
-    return this.allLinks.filter(el => Utils.trimString(el.type, ";") === mediaType);
+    return this.allLinks.filter(el => Utils.splitString(el.type, ";") === mediaType);
   }
 
   public linkMatchingMediaType(mediaType: string): Link | undefined {
-    return this.allLinks.find(el => Utils.trimString(el.type, ";") === mediaType);
+    return this.allLinks.find(el => Utils.splitString(el.type, ";") === mediaType);
   }
 
   // Presentation Helpers
@@ -155,7 +155,7 @@ export default class Publication {
       return this.metadata.readingProgression;
     } else {
       if (this.metadata.language.length > 0) {
-        const lang = Utils.trimString(this.metadata.language[0], "");
+        const lang = Utils.splitString(this.metadata.language[0], "");
         if (rtlLanguages.includes(lang)) {
           ReadingProgression.rtl;
         }
