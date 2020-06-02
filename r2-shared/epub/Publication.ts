@@ -1,4 +1,5 @@
 import Publication from "../Publication";
+import Store from "../../Store/Store";
 import { Link } from "../Link";
 import { EPUBLayout } from "./Layout";
 
@@ -10,10 +11,11 @@ export default class EPUBPublication extends Publication {
   public readonly listOfTables?: Array<Link>;
   public readonly listOfVideoClips?: Array<Link>;
 
-  constructor(manifestJSON: any, manifestURL?: string) {
+  constructor(manifestJSON: any, manifestURL?: string, store?: Store) {
     super(
       manifestJSON,
-      manifestURL
+      manifestURL,
+      store
     )
     this.pageList = manifestJSON.pageList || [];
     this.landmarks = manifestJSON.landmarks || [];

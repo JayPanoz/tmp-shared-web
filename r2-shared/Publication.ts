@@ -2,6 +2,7 @@ import { Metadata } from "./Metadata";
 import { Link } from "./Link";
 import { Locator } from "./Locator";
 import { ReadingProgression } from "./ReadingProgression";
+import Store from "../Store/Store";
 import * as Utils from "./utils/splitString";
 
 interface URLParams {
@@ -21,8 +22,9 @@ export default class Publication {
   private readonly allLinks: Array<Link>;
 
   public readonly baseURL: string;
+  private store?: Store;
 
-  constructor(manifestJSON: any, manifestURL?: string) {
+  constructor(manifestJSON: any, manifestURL?: string, store?: Store) {
     this.context = manifestJSON["@context"] || [];
     this.metadata = manifestJSON.metadata || {};
     this.links = manifestJSON.links || [];
@@ -33,6 +35,7 @@ export default class Publication {
     this.allLinks = this.readingOrder.concat(this.resources, this.links);
 
     this.baseURL = manifestURL || this.getSelfLink();
+    this.store = store;
   }
 
   private getSelfLink(): string {
@@ -40,7 +43,52 @@ export default class Publication {
     return selfLink.href;
   }
 
-  // Existing methods go here…
+  // Getting/Setting Manifest
+
+  public static async requestManifest(manifestURL: string, store?: Store): Promise<Publication> {
+    const fetchRetry = async (attempts: number, delay: number): Promise<Publication> => {
+      try {
+        const response = await window.fetch(manifestURL, { credentials: "same-origin" });
+        if(!response.ok) {
+          throw new Error("Invalid response.");
+        }
+        const manifestJSON = await response.json();
+        if (store) {
+          await store.set("manifest", JSON.stringify(manifestJSON));
+          return new Publication(manifestJSON, manifestURL, store);
+        }
+        return new Publication(manifestJSON, manifestURL);
+      } catch(err) {
+        if (attempts <= 1) {
+          throw err
+        }
+        setTimeout(async () => {
+          return await fetchRetry(attempts - 1, 1000);
+        }, delay)
+      }
+    }
+
+    return await fetchRetry(3, 1000);
+  }
+
+  public static async getManifest(manifestURL: string, store?: Store): Promise<Publication> {
+    if (store) {
+      const manifestString = await store.get("manifest");
+      if (manifestString) {
+        const manifestJSON = JSON.parse(manifestString);
+        return new Publication(manifestJSON, manifestURL, store);
+      } else {
+        return Publication.requestManifest(manifestURL, store);
+      }
+    } else {
+      return Publication.requestManifest(manifestURL);
+    }
+  }
+
+  public static async purgeManifest(store: Store): Promise<void> {
+    await store.remove("manifest");
+    return new Promise<void>(resolve => resolve());
+  }
 
   // readingOrder Helpers
 
