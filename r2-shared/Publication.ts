@@ -90,6 +90,84 @@ export default class Publication {
     return new Promise<void>(resolve => resolve());
   }
 
+  // Getting readingOrder items
+
+  public getCoverLink(): Link | null {
+    const coverLink = this.linkWithRel("cover");
+    if (coverLink) {
+      return coverLink;
+    }
+    return null;
+  }
+
+  public getStartLink(): Link | null {
+    if (this.readingOrder.length > 0) {
+      return this.readingOrder[0];
+    }
+    return null;
+  }
+
+  public getPreviousSpineItem(href: string): Link | null {
+    const index = this.getSpineIndex(href);
+    if (index !== null && index > 0) {
+      return this.readingOrder[index - 1];
+    }
+    return null;
+  }
+
+  public getNextSpineItem(href: string): Link | null {
+    const index = this.getSpineIndex(href);
+    if (index !== null && index < (this.readingOrder.length - 1)) {
+      return this.readingOrder[index + 1];
+    }
+    return null;
+  }
+
+  public getSpineItem(href: string): Link | null {
+    const index = this.getSpineIndex(href);
+    if (index !== null) {
+      return this.readingOrder[index];
+    }
+    return null;
+  }
+
+  public getSpineIndex(href: string): number {
+    for (let index = 0; index < this.readingOrder.length; index++) {
+      const item = this.readingOrder[index];
+      if (item.href) {
+        const itemUrl = new URL(item.href, this.baseURL).href;
+        if (itemUrl === href) {
+          return index;
+        }
+      }
+    }
+    return null;
+  }
+
+  // Getting toc items
+
+  public getTOCItem(href: string): Link | null {
+    const findItem = (href: string, links: Array<Link>): Link | null => {
+      for (let index = 0; index < links.length; index++) {
+        const item = links[index];
+        if (item.href) {
+          const itemUrl = new URL(item.href, this.baseURL).href;
+          if (itemUrl === href) {
+            return item;
+          }
+        }
+        if (item.children) {
+          const childItem = findItem(href, item.children);
+          if (childItem !== null) {
+            return childItem;
+          }
+        }
+      }
+      return null;
+    }
+    return findItem(href, this.toc);
+  }
+
   // readingOrder Helpers
 
   public anyReadingOrder(predicate: any, key?: string): boolean {
