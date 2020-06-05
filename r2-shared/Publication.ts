@@ -9,6 +9,8 @@ interface URLParams {
   [param: string]: string
 }
 
+type Predicate = (Link: Link) => boolean;
+
 const rtlLanguages = ["ar", "fa", "he", "zh-Hant", "zh-TW"];
 
 export default class Publication {
@@ -170,11 +172,11 @@ export default class Publication {
 
   // readingOrder Helpers
 
-  public anyReadingOrder(predicate: any, key?: string): boolean {
+  public anyReadingOrder(predicate: Predicate, key?: string): boolean {
     return this.readingOrder.some(predicate);
   }
 
-  public allReadingOrder(predicate: any, key?: string): boolean {
+  public allReadingOrder(predicate: Predicate, key?: string): boolean {
     return this.readingOrder.every(predicate);
   }
 
@@ -241,37 +243,61 @@ export default class Publication {
   // Link Helpers
   // Note: alternate and children checking
 
-  public linksMatching(predicate: any): Array<Link> {
+  private deepFind(collection: Array<Link>, predicate: Predicate): Link | null {
+    for (const el of collection) {
+      if (predicate(el)) {
+        return el;
+      } else if (el.alternate) {
+        this.deepFind(el.alternate, predicate);
+      }
+    }
+    return null;
+  }
+
+  private link(predicate: Predicate): Link | null {
+    let result: Link | null = this.deepFind(this.readingOrder, predicate);
+    if (result !== null) {
+      return result;
+    }
+    result = this.deepFind(this.resources, predicate);
+    if (result !== null) {
+      return result;
+    }
+    result = this.deepFind(this.links, predicate);
+    return result;
+  }
+
+  public linksMatching(predicate: Predicate): Array<Link> {
     return this.allLinks.filter(predicate);
   }
 
-  public linkMatching(predicate: any): Link | undefined {
-    return this.allLinks.find(predicate); 
+  public linkMatching(predicate: Predicate): Link | null {
+    return this.link(predicate); 
   }
 
-  public linkFromURL(url: string): Link | undefined {
+  public linkFromURL(url: string): Link | null {
     const href = this.hrefFromURL(url);
     return this.linkWithHREF(href);
   }
 
-  public linkWithHREF(href: string): Link | undefined {
-    return this.allLinks.find(el => el.href === href);
+  public linkWithHREF(href: string): Link | null {
+    return this.link(el => el.href === href);
   }
 
   public linksWithRel(rel: string): Array<Link> {
     return this.allLinks.filter(el => el.rel === rel);
   }
 
-  public linkWithRel(rel: string): Link | undefined {
-    return this.allLinks.find(el => el.rel === rel);
+  public linkWithRel(rel: string): Link | null {
+    return this.link(el => el.rel === rel);
   }
 
   public linksMatchingMediaType(mediaType: string): Array<Link> {
     return this.allLinks.filter(el => Utils.splitString(el.type, ";") === mediaType);
   }
 
-  public linkMatchingMediaType(mediaType: string): Link | undefined {
-    return this.allLinks.find(el => Utils.splitString(el.type, ";") === mediaType);
+  public linkMatchingMediaType(mediaType: string): Link | null {
+    return this.link(el => Utils.splitString(el.type, ";") === mediaType);
   }
 
   // Presentation Helpers
