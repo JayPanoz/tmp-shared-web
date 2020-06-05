@@ -71,13 +71,13 @@ export default class Publication {
         if (attempts <= 1) {
           throw err
         }
-        setTimeout(async () => {
-          return await fetchRetry(attempts - 1, 1000);
+        setTimeout( () => {
+          return fetchRetry(attempts - 1, 1000);
         }, delay)
       }
     }
 
-    return await fetchRetry(3, 1000);
+    return fetchRetry(3, 1000);
   }
 
   public static async getManifest(manifestURL: string, store?: Store): Promise<Publication> {
@@ -209,33 +209,33 @@ export default class Publication {
 
   public async allReadingOrderIsAudio(): Promise<boolean> {
     const predicate = (el: Link) => el.type.startsWith("audio");
-    return await this.allReadingOrder(predicate, PublicationCacheKeys.audio);
+    return this.allReadingOrder(predicate, PublicationCacheKeys.audio);
   }
 
   public async allReadingOrderIsBitmap(): Promise<boolean> {
     const predicate = (el: Link) => el.type.startsWith("image");
-    return await this.allReadingOrder(predicate, PublicationCacheKeys.bitmap);
+    return this.allReadingOrder(predicate, PublicationCacheKeys.bitmap);
   }
 
   public async allReadingOrderIsHTML(): Promise<boolean> {
     const mediaTypes = ["text/html", "application/xhtml+xml"];
     const predicate = (el: Link) => mediaTypes.includes(Utils.splitString(el.type, ";"));
-    return await this.allReadingOrder(predicate, PublicationCacheKeys.html);
+    return this.allReadingOrder(predicate, PublicationCacheKeys.html);
   }
 
   public async allReadingOrderIsVideo(): Promise<boolean> {
     const predicate = (el: Link) => el.type.startsWith("video");
-    return await this.allReadingOrder(predicate, PublicationCacheKeys.video);
+    return this.allReadingOrder(predicate, PublicationCacheKeys.video);
   }
 
   public async allReadingOrderMatchesMediaType(mediaType: string): Promise<boolean> {
     const predicate = (el: Link) => Utils.splitString(el.type, ";") === mediaType;
-    return await this.allReadingOrder(predicate);
+    return this.allReadingOrder(predicate);
   }
 
   public async allReadingOrderMatchesAnyOfMediaType(mediaType: Array<string>): Promise<boolean> {
     const predicate = (el: Link) => mediaType.includes(Utils.splitString(el.type, ";")) ;
-    return await this.allReadingOrder(predicate);
+    return this.allReadingOrder(predicate);
   }
 
   // URL Helpers
