@@ -11,7 +11,12 @@ interface URLParams {
 
 type Predicate = (Link: Link) => boolean;
 
-const rtlLanguages = ["ar", "fa", "he", "zh-Hant", "zh-TW"];
+enum PublicationCacheKeys {
+  audio = "allReadingOrderIsAudio",
+  bitmap = "allReadingOrderIsBitmap",
+  html = "allReadingOrderIsHTML",
+  video = "allReadingOrderIsVideo"
+}
 
 export default class Publication {
   public readonly context: Array<string>;
@@ -25,6 +30,8 @@ export default class Publication {
 
   public readonly baseURL: string;
   private store?: Store;
+
+  private static readonly RTLLanguages = ["ar", "fa", "he", "zh-Hant", "zh-TW"];
 
   constructor(manifestJSON: any, manifestURL?: string, store?: Store) {
     this.context = manifestJSON["@context"] || [];
@@ -172,43 +179,63 @@ export default class Publication {
 
   // readingOrder Helpers
 
-  public anyReadingOrder(predicate: Predicate, key?: string): boolean {
-    return this.readingOrder.some(predicate);
+  public async anyReadingOrder(predicate: Predicate, key?: string): Promise<boolean> {
+    if (key) {
+      const found = await this.getCache(key);
+      if (found !== null) {
+        return new Promise<boolean>(resolve => resolve(JSON.parse(found)));
+      }
+    }
+    const result = this.readingOrder.some(predicate);
+    if (key) {
+      await this.setCache(key, JSON.stringify(result));
+    }
+    return new Promise<boolean>(resolve => resolve(result));
   }
 
-  public allReadingOrder(predicate: Predicate, key?: string): boolean {
-    return this.readingOrder.every(predicate);
+  public async allReadingOrder(predicate: Predicate, key?: string): Promise<boolean> {
+    if (key) {
+      const found = await this.getCache(key);
+      if (found !== null) {
+        return new Promise<boolean>(resolve => resolve(JSON.parse(found)));
+      }
+    }
+    const result = this.readingOrder.every(predicate);
+    if (key) {
+      await this.setCache(key, JSON.stringify(result));
+    }
+    return new Promise<boolean>(resolve => resolve(result));
   }
 
-  public allReadingOrderIsBitmap(): boolean {
-    const predicate = (el: Link) => el.type.startsWith("image");
-    return this.allReadingOrder(predicate);
-  }
-
-  public allReadingOrderIsAudio(): boolean {
+  public async allReadingOrderIsAudio(): Promise<boolean> {
     const predicate = (el: Link) => el.type.startsWith("audio");
-    return this.allReadingOrder(predicate);
+    return await this.allReadingOrder(predicate, PublicationCacheKeys.audio);
   }
 
-  public allReadingOrderIsVideo(): boolean {
-    const predicate = (el: Link) => el.type.startsWith("video");
-    return this.allReadingOrder(predicate);
+  public async allReadingOrderIsBitmap(): Promise<boolean> {
+    const predicate = (el: Link) => el.type.startsWith("image");
+    return await this.allReadingOrder(predicate, PublicationCacheKeys.bitmap);
   }
 
-  public allReadingOrderIsHTML(): boolean {
+  public async allReadingOrderIsHTML(): Promise<boolean> {
     const mediaTypes = ["text/html", "application/xhtml+xml"];
     const predicate = (el: Link) => mediaTypes.includes(Utils.splitString(el.type, ";"));
-    return this.allReadingOrder(predicate);
+    return await this.allReadingOrder(predicate, PublicationCacheKeys.html);
   }
 
-  public allReadingOrderMatchesMediaType(mediaType: string): boolean {
+  public async allReadingOrderIsVideo(): Promise<boolean> {
+    const predicate = (el: Link) => el.type.startsWith("video");
+    return await this.allReadingOrder(predicate, PublicationCacheKeys.video);
+  }
+
+  public async allReadingOrderMatchesMediaType(mediaType: string): Promise<boolean> {
     const predicate = (el: Link) => Utils.splitString(el.type, ";") === mediaType;
-    return this.allReadingOrder(predicate);
+    return await this.allReadingOrder(predicate);
   }
 
-  public allReadingOrderMatchesAnyOfMediaType(mediaType: Array<string>): boolean {
+  public async allReadingOrderMatchesAnyOfMediaType(mediaType: Array<string>): Promise<boolean> {
     const predicate = (el: Link) => mediaType.includes(Utils.splitString(el.type, ";")) ;
-    return this.allReadingOrder(predicate);
+    return await this.allReadingOrder(predicate);
   }
 
   // URL Helpers
@@ -309,10 +336,27 @@ export default class Publication {
       if (this.metadata.language.length > 0) {
         const primaryLang = this.metadata.language[0];
         const lang = (primaryLang.includes("zh") ? primaryLang : Utils.splitString(primaryLang, "-"));
-        if (rtlLanguages.includes(lang)) {
+        if (Publication.RTLLanguages.includes(lang)) {
           ReadingProgression.rtl;
         }
       }
     }
+  }
+
+  // Cache
+
+  private async getCache(key: string): Promise<string | null> {
+    let value: string | null = null;
+    if (this.store) {
+      value = await this.store.get(key);
+    }
+    return new Promise<string | null>(resolve => resolve(value));
+  }
+
+  private async setCache(key: string, value: string): Promise<void> {
+    if (this.store) {
+      await this.store.set(key, value);
+    }
+    return new Promise<void>(resolve => resolve());
   }
 }
