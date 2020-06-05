@@ -17,7 +17,7 @@ export default class Publication {
   public readonly links: Array<Link>;
   public readonly readingOrder?: Array<Link>;
   public readonly resources?: Array<Link>;
-  public readonly toc?: Array<Link>;
+  public readonly tableOfContents?: Array<Link>;
 
   private readonly allLinks: Array<Link>;
 
@@ -30,7 +30,7 @@ export default class Publication {
     this.links = manifestJSON.links || [];
     this.readingOrder = manifestJSON.readingOrder || [];
     this.resources = manifestJSON.resources || [];
-    this.toc = manifestJSON.toc || [];
+    this.tableOfContents = manifestJSON.toc || [];
 
     this.allLinks = this.readingOrder.concat(this.resources, this.links);
 
@@ -165,7 +165,7 @@ export default class Publication {
       }
       return null;
     }
-    return findItem(href, this.toc);
+    return findItem(href, this.tableOfContents);
   }
 
   // readingOrder Helpers
