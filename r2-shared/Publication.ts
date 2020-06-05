@@ -9,7 +9,7 @@ interface URLParams {
   [param: string]: string
 }
 
-const rtlLanguages = ["ar", "fa", "he"];
+const rtlLanguages = ["ar", "fa", "he", "zh-Hant", "zh-TW"];
 
 export default class Publication {
   public readonly context: Array<string>;
@@ -281,7 +281,8 @@ export default class Publication {
       return this.metadata.readingProgression;
     } else {
       if (this.metadata.language.length > 0) {
-        const lang = Utils.splitString(this.metadata.language[0], "");
+        const primaryLang = this.metadata.language[0];
+        const lang = (primaryLang.includes("zh") ? primaryLang : Utils.splitString(primaryLang, "-"));
         if (rtlLanguages.includes(lang)) {
           ReadingProgression.rtl;
         }
