@@ -227,9 +227,9 @@ export default class Publication {
   }
 
   public hrefFromURL(url: string): string {
-    const urlObject = new URL(url);
-    for (const p of urlObject.searchParams) {
-      urlObject.searchParams.delete(p[0]);
+    const urlObject = new URL(url, this.baseURL);
+    for (const key of urlObject.searchParams.keys()) {
+      urlObject.searchParams.delete(key);
     }
     let result = urlObject.href;
     if (result.includes(this.baseURL)) {
