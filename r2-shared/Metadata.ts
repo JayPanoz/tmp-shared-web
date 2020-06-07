@@ -2,7 +2,7 @@ import { IContributor} from "./Contributor";
 import { ISubject } from "./Subject";
 import { LocalizedString } from "./LocalizedString";
 import { ReadingProgression } from "./ReadingProgression";
-import { PresentationMetadata } from "./presentation/Presentation";
+import Presentation from "./presentation/Presentation";
 import * as Utils from "./utils/splitString";
 
 interface Collection extends IContributor {
@@ -44,7 +44,7 @@ export interface IMetadata {
   duration?: number;
   numberOfPages?: number;
   abridged?: boolean;
-  presentation?: PresentationMetadata;
+  presentation?: Presentation;
 }
 
 export default class Metadata implements IMetadata {
@@ -74,7 +74,7 @@ export default class Metadata implements IMetadata {
   public duration?: number;
   public numberOfPages?: number;
   public abridged?: boolean;
-  public presentation?: PresentationMetadata;
+  public presentation?: Presentation;
 
   private static readonly RTLLanguages = ["ar", "fa", "he", "zh-Hant", "zh-TW"];
 
@@ -105,7 +105,7 @@ export default class Metadata implements IMetadata {
     this.duration = metadata.duration;
     this.numberOfPages = metadata.numberOfPages;
     this.abridged = metadata.abridged || false;
-    this.presentation = metadata.presentation || {}; 
+    this.presentation = metadata.presentation ? new Presentation(metadata.presentation) : new Presentation({}); 
   }
 
   public effectiveReadingProgression(): ReadingProgression {
