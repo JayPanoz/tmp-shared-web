@@ -144,17 +144,17 @@ export default class PublicationManifest {
   }
 
   public linkWithRel(rel: string): Link | null {
+    const links: Array<Links> = [this.readingOrder, this.resources, this.links];
     let result = null;
-    result = this.readingOrder.firstWithRel(rel);
-    if (result !== null) {
-      return result
+
+    for (const collection of links) {
+      result = collection.firstWithRel(rel);
+      if (result !== null) {
+        return result;
+      }
     }
-    result = this.resources.firstWithRel(rel);
-    if (result !== null) {
-      return result
-    }
-    result = this.links.firstWithRel(rel);
-    return result;
+
+    return null;
   }
 
   public linksWithRel(rel: string): Array<Link> {

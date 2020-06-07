@@ -30,30 +30,26 @@ export default class Publication {
   };
 
   public linkWithHref(href: string): Link | null {
+    const links: Array<Links> = [this.manifest.readingOrder, this.manifest.resources, this.manifest.links];
     let result = null;
-    result = this.manifest.readingOrder.firstWithHref(href);
-    if (result !== null) {
-      return result
+
+    for (const collection of links) {
+      result = collection.firstWithHref(href);
+      if (result !== null) {
+        return result;
+      }
     }
-    result = this.manifest.resources.firstWithHref(href);
-    if (result !== null) {
-      return result
-    }
-    result = this.manifest.links.firstWithHref(href);
-    if (result !== null) {
-      return result;
-    }
+
     const shortHref = href.split(/[#\?]/)[0];
-    result = this.manifest.readingOrder.firstWithHref(shortHref);
-    if (result !== null) {
-      return result
+
+    for (const collection of links) {
+      result = collection.firstWithHref(shortHref);
+      if (result !== null) {
+        return result;
+      }
     }
-    result = this.manifest.resources.firstWithHref(shortHref);
-    if (result !== null) {
-      return result
-    }
-    result = this.manifest.links.firstWithHref(shortHref);
-    return result;
+
+    return null;
   }
 
   public linkWithRel(rel: string): Link {
