@@ -40,6 +40,19 @@ export default class Publication {
       return result
     }
     result = this.manifest.links.firstWithHref(href);
+    if (result !== null) {
+      return result;
+    }
+    const shortHref = href.split(/[#\?]/)[0];
+    result = this.manifest.readingOrder.firstWithHref(shortHref);
+    if (result !== null) {
+      return result
+    }
+    result = this.manifest.resources.firstWithHref(shortHref);
+    if (result !== null) {
+      return result
+    }
+    result = this.manifest.links.firstWithHref(shortHref);
     return result;
   }
 
