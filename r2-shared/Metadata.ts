@@ -1,8 +1,9 @@
 import { IContributor} from "./Contributor";
-import { ReadingProgression } from "./ReadingProgression";
 import { ISubject } from "./Subject";
 import { LocalizedString } from "./LocalizedString";
+import { ReadingProgression } from "./ReadingProgression";
 import { PresentationMetadata } from "./presentation/Presentation";
+import * as Utils from "./utils/splitString";
 
 interface Collection extends IContributor {
   position?: number;
@@ -16,7 +17,7 @@ interface Collections {
 type Contributor = string | IContributor | Array<string | IContributor>;
 type Subject = string | ISubject | Array<string | ISubject>;
 
-export interface Metadata {
+export interface IMetadata {
   identifier: string;
   title: string | LocalizedString;
   subtitle?: string | LocalizedString;
@@ -38,10 +39,88 @@ export interface Metadata {
   published?: string;
   modified?: string;
   subject?: Subject;
-  belongsTo?: Collections;
+  belongsTo?: Array<Collections>;
   readingProgression?: ReadingProgression;
   duration?: number;
   numberOfPages?: number;
   abridged?: boolean;
   presentation?: PresentationMetadata;
+}
+
+export default class Metadata implements IMetadata {
+  public identifier: string;
+  public title: string | LocalizedString;
+  public subtitle?: string | LocalizedString;
+  public artist?: Contributor;
+  public author?: Contributor;
+  public colorist?: Contributor;
+  public contributor?: Contributor;
+  public editor?: Contributor;
+  public illustrator?: Contributor;
+  public inker?: Contributor;
+  public letterer?: Contributor;
+  public narrator?: Contributor;
+  public penciler?: Contributor;
+  public translator?: Contributor;
+  public language?: Array<string>;
+  public description?: string;
+  public publisher?: Contributor;
+  public imprint?: Contributor;
+  public published?: string;
+  public modified?: string;
+  public subject?: Subject;
+  public belongsTo?: Array<Collections>;
+  public readingProgression?: ReadingProgression;
+  public duration?: number;
+  public numberOfPages?: number;
+  public abridged?: boolean;
+  public presentation?: PresentationMetadata;
+
+  private static readonly RTLLanguages = ["ar", "fa", "he", "zh-Hant", "zh-TW"];
+
+  constructor(metadata: IMetadata) {
+    this.identifier = metadata.identifier;
+    this.title = metadata.title;
+    this.subtitle = metadata.subtitle;
+    this.artist = metadata.artist || [];
+    this.author = metadata.author || [];
+    this.colorist = metadata.colorist || [];
+    this.contributor = metadata.contributor || [];
+    this.editor = metadata.editor || [];
+    this.illustrator = metadata.illustrator || [];
+    this.inker = metadata.inker || [];
+    this.letterer = metadata.letterer || [];
+    this.narrator = metadata.narrator || [];
+    this.penciler = metadata.penciler || [];
+    this.translator = metadata.translator || [];
+    this.language = metadata.language || [];
+    this.description = metadata.description;
+    this.publisher = metadata.publisher || [];
+    this.imprint = metadata.imprint || [];
+    this.published = metadata.published;
+    this.modified = metadata.modified;
+    this.subject = metadata.subject || [];
+    this.belongsTo = metadata.belongsTo || [];
+    this.readingProgression = metadata.readingProgression || ReadingProgression.auto;
+    this.duration = metadata.duration;
+    this.numberOfPages = metadata.numberOfPages;
+    this.abridged = metadata.abridged || false;
+    this.presentation = metadata.presentation || {}; 
+  }
+
+  public effectiveReadingProgression(): ReadingProgression {
+    if (this.readingProgression && this.readingProgression !== ReadingProgression.auto) {
+      return this.readingProgression;
+    } 
+    
+    if (this.language.length > 0) {
+      const primaryLang = this.language[0];
+      const lang = (primaryLang.includes("zh") ? primaryLang : Utils.splitString(primaryLang, "-"));
+      if (Metadata.RTLLanguages.includes(lang)) {
+        return ReadingProgression.rtl;
+      }
+    }
+
+    return ReadingProgression.ltr;
+  }
 }

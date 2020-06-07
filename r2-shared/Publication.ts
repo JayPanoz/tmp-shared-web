@@ -1,8 +1,7 @@
-import { Metadata } from "./Metadata";
+import Metadata from "./Metadata";
+import Store from "../Store/Store";
 import { Link } from "./Link";
 import { Locator } from "./Locator";
-import { ReadingProgression } from "./ReadingProgression";
-import Store from "../Store/Store";
 import * as Utils from "./utils/splitString";
 
 interface URLParams {
@@ -31,11 +30,9 @@ export default class Publication {
   public readonly baseURL: string;
   private store?: Store;
 
-  private static readonly RTLLanguages = ["ar", "fa", "he", "zh-Hant", "zh-TW"];
-
   constructor(manifestJSON: any, manifestURL?: string, store?: Store) {
     this.context = manifestJSON["@context"] || [];
-    this.metadata = manifestJSON.metadata || {};
+    this.metadata = new Metadata(manifestJSON.metadata);
     this.links = manifestJSON.links || [];
     this.readingOrder = manifestJSON.readingOrder || [];
     this.resources = manifestJSON.resources || [];
@@ -325,24 +322,6 @@ export default class Publication {
 
   public linkMatchingMediaType(mediaType: string): Link | null {
     return this.link(el => Utils.splitString(el.type, ";") === mediaType);
-  }
-
-  // Presentation Helpers
-
-  public effectiveReadingProgression(): ReadingProgression {
-    if (this.metadata.readingProgression && this.metadata.readingProgression !== ReadingProgression.auto) {
-      return this.metadata.readingProgression;
-    } 
-    
-    if (this.metadata.language.length > 0) {
-      const primaryLang = this.metadata.language[0];
-      const lang = (primaryLang.includes("zh") ? primaryLang : Utils.splitString(primaryLang, "-"));
-      if (Publication.RTLLanguages.includes(lang)) {
-        ReadingProgression.rtl;
-      }
-    }
-
-    return ReadingProgression.ltr;
   }
 
   // Cache
