@@ -39,20 +39,9 @@ export class Links extends Array<Link> {
     Object.setPrototypeOf(this, Links.prototype);
   }
 
-  private deepFind(collection: Array<Link>, predicate: Predicate): Link | null {
-    for (const el of collection) {
-      if (predicate(el)) {
-        return el;
-      } else if (el.alternate) {
-        this.deepFind(el.alternate, predicate);
-      }
-    }
-    return null;
-  }
-
   public firstWithRel(rel: string): Link | null {
     const predicate = (el: Link) => el.rel === rel;
-    return this.deepFind(this, predicate);
+    return this.find(predicate);
   }
 
   public filterByRel(rel: string): Array<Link> {
@@ -62,7 +51,7 @@ export class Links extends Array<Link> {
 
   public firstWithHref(href: string): Link | null {
     const predicate = (el: Link) => el.href === href;
-    return this.deepFind(this, predicate);
+    return this.find(predicate);
   }
 
   public indexOfFirstWithHref(href: string): number {
@@ -72,7 +61,7 @@ export class Links extends Array<Link> {
 
   public firstWithMediaType(mediaType: string): Link | null {
     const predicate = (el: Link) => splitString(el.type, ";") === mediaType;
-    return this.deepFind(this, predicate);
+    return this.find(predicate);
   }
 
   public filterByMediaType(mediaType: string): Array<Link> {
