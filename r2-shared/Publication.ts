@@ -332,15 +332,17 @@ export default class Publication {
   public effectiveReadingProgression(): ReadingProgression {
     if (this.metadata.readingProgression && this.metadata.readingProgression !== ReadingProgression.auto) {
       return this.metadata.readingProgression;
-    } else {
-      if (this.metadata.language.length > 0) {
-        const primaryLang = this.metadata.language[0];
-        const lang = (primaryLang.includes("zh") ? primaryLang : Utils.splitString(primaryLang, "-"));
-        if (Publication.RTLLanguages.includes(lang)) {
-          ReadingProgression.rtl;
-        }
+    } 
+    
+    if (this.metadata.language.length > 0) {
+      const primaryLang = this.metadata.language[0];
+      const lang = (primaryLang.includes("zh") ? primaryLang : Utils.splitString(primaryLang, "-"));
+      if (Publication.RTLLanguages.includes(lang)) {
+        ReadingProgression.rtl;
       }
     }
+
+    return ReadingProgression.ltr;
   }
 
   // Cache
