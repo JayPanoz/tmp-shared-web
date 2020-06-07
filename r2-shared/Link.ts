@@ -36,6 +36,7 @@ export interface Link {
 export class Links extends Array<Link> {
   constructor(items?: Array<Link>) {
     super(...items);
+    Object.setPrototypeOf(this, Links.prototype);
   }
 
   private deepFind(collection: Array<Link>, predicate: Predicate): Link | null {
