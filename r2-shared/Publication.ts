@@ -7,13 +7,6 @@ export default class Publication {
   public fetcher: any; // tmp
   public services: any; // tmp
 
-  public context: Array<string> = this.manifest.context;
-  public metadata: Metadata = this.manifest.metadata;
-  public links: Links = this.manifest.links;
-  public readingOrder: Links = this.manifest.readingOrder;
-  public resources: Links = this.manifest.resources;
-  public tableOfContents: Links = this.manifest.tableOfContents;
-
   constructor(manifest: PublicationManifest, fetcher: any, services: any) {
     this.manifest = manifest;
     this.fetcher = fetcher;
