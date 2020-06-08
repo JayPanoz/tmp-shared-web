@@ -10,9 +10,9 @@ export default class PublicationManifest {
   public readonly resources?: Links;
   public readonly tableOfContents?: Links;
 
-  public readonly manifestURL?: string;
+  public readonly manifestUrl?: string;
 
-  constructor(manifestJSON: any, manifestURL?: string) {
+  constructor(manifestJSON: any, manifestUrl?: string) {
     this.context = manifestJSON["@context"] || [];
     this.metadata = new Metadata(manifestJSON.metadata);
     this.links = manifestJSON.links ? new Links(manifestJSON.links) : new Links([]);
@@ -20,28 +20,28 @@ export default class PublicationManifest {
     this.resources = manifestJSON.resources ? new Links(manifestJSON.resources) : new Links([]);
     this.tableOfContents = manifestJSON.toc ? new Links(manifestJSON.toc) : new Links([]);
 
-    this.manifestURL = manifestURL;
+    this.manifestUrl = manifestUrl;
   }
 
   // Getting/Setting Manifest
 
-  public static async requestManifest(manifestURL: string, store?: Store): Promise<PublicationManifest> {
+  public static async requestManifest(manifestUrl: string, store?: Store): Promise<PublicationManifest> {
     const fetchRetry = async (attempts: number, delay: number): Promise<PublicationManifest> => {
       try {
-        const response = await window.fetch(manifestURL, { credentials: "same-origin" });
-        if(!response.ok) {
+        const response = await window.fetch(manifestUrl, { credentials: "same-origin" });
+        if (!response.ok) {
           throw new Error("Invalid response.");
         }
         const manifestJSON = await response.json();
         if (store) {
           await store.set("manifest", JSON.stringify(manifestJSON));
         }
-        return new PublicationManifest(manifestJSON, manifestURL);
-      } catch(err) {
+        return new PublicationManifest(manifestJSON, manifestUrl);
+      } catch (err) {
         if (attempts <= 1) {
           throw err
         }
-        setTimeout( () => {
+        setTimeout(() => {
           return fetchRetry(attempts - 1, 1000);
         }, delay)
       }
@@ -50,17 +50,17 @@ export default class PublicationManifest {
     return fetchRetry(3, 1000);
   }
 
-  public static async getManifest(manifestURL: string, store?: Store): Promise<PublicationManifest> {
+  public static async getManifest(manifestUrl: string, store?: Store): Promise<PublicationManifest> {
     if (store) {
       const manifestString = await store.get("manifest");
       if (manifestString) {
         const manifestJSON = JSON.parse(manifestString);
-        return new PublicationManifest(manifestJSON, manifestURL);
+        return new PublicationManifest(manifestJSON, manifestUrl);
       } else {
-        return PublicationManifest.requestManifest(manifestURL, store);
+        return PublicationManifest.requestManifest(manifestUrl, store);
       }
     } else {
-      return PublicationManifest.requestManifest(manifestURL);
+      return PublicationManifest.requestManifest(manifestUrl);
     }
   }
 
@@ -110,7 +110,7 @@ export default class PublicationManifest {
     for (let index = 0; index < this.readingOrder.length; index++) {
       const item = this.readingOrder[index];
       if (item.href) {
-        const itemUrl = new URL(item.href, this.manifestURL).href;
+        const itemUrl = new URL(item.href, this.manifestUrl).href;
         if (itemUrl === href) {
           return index;
         }
@@ -119,14 +119,54 @@ export default class PublicationManifest {
     return null;
   }
 
+  // R2D2BC
+  public getAbsoluteHref(href: string): string | null {
+    return new URL(href, this.manifestUrl).href;
+  }
+
+  // R2D2BC
+  public getRelativeHref(href: string): string | null {
+    const manifest = this.manifestUrl.replace("/manifest.json", ""); //new URL(this.manifestUrl.href, this.manifestUrl.href).href;
+    return href.replace(manifest, "");
+  }
+
   // Getting toc items
+
+  // R2D2BC
+  public getTOCItemAbsolute(href: string): Link | null {
+    const absolute = this.getAbsoluteHref(href)
+    const findItem = (href: string, links: Array<Link>): Link | null => {
+      for (let index = 0; index < links.length; index++) {
+        const item = links[index];
+        if (item.href) {
+          const hrefAbsolutre = (item.href.indexOf("#") !== -1) ? item.href.slice(0, item.href.indexOf("#")) : item.href
+          const itemUrl = new URL(hrefAbsolutre, this.manifestUrl).href;
+          if (itemUrl === href) {
+            return item;
+          }
+        }
+        if (item.children) {
+          const childItem = findItem(href, item.children);
+          if (childItem !== null) {
+            return childItem;
+          }
+        }
+      }
+      return null;
+    }
+    let link = findItem(absolute, this.tableOfContents);
+    if (link === null) {
+      link = findItem(absolute, this.readingOrder);
+    }
+    return link
+  }
 
   public getTOCItem(href: string): Link | null {
     const findItem = (href: string, links: Array<Link>): Link | null => {
       for (let index = 0; index < links.length; index++) {
         const item = links[index];
         if (item.href) {
-          const itemUrl = new URL(item.href, this.manifestURL).href;
+          const itemUrl = new URL(item.href, this.manifestUrl).href;
           if (itemUrl === href) {
             return item;
           }
