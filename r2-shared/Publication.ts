@@ -43,10 +43,10 @@ export default class Publication {
       const children: Array<Links> = links.flatMap(item => {
         let arr = []; 
         if (item.alternate) {
-          arr.push(item.alternate)
+          arr.push(new Links(item.alternate))
         } 
         if (item.children) {
-          arr.push(item.children)
+          arr.push(new Links(item.children))
         } 
         return arr;
       });
