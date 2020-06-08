@@ -1,7 +1,7 @@
 import { Encrypted } from "./Encrypted";
 import { PresentationProperties } from "./presentation/Presentation";
 import { Properties } from "./epub/Properties";
-import { splitString } from "./utils/splitString";
+import { splitString } from "../utils/splitString";
 
 /*  
     Keeping as ref list of values we know are currently used, per webpub doc:

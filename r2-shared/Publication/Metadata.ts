@@ -3,7 +3,7 @@ import { ISubject } from "./Subject";
 import { LocalizedString } from "./LocalizedString";
 import { ReadingProgression } from "./ReadingProgression";
 import Presentation from "./presentation/Presentation";
-import * as Utils from "./utils/splitString";
+import * as Utils from "../utils/splitString";
 
 interface Collection extends IContributor {
   position?: number;
