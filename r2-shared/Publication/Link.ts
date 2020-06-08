@@ -1,3 +1,4 @@
+import MediaType from "../Format/MediaType";
 import { Encrypted } from "./Encrypted";
 import { PresentationProperties } from "./presentation/Presentation";
 import { Properties } from "./epub/Properties";
@@ -58,46 +59,53 @@ export class Links extends Array<Link> {
   }
 
   public firstWithMediaType(mediaType: string): Link | null {
-    const predicate = (el: Link) => splitString(el.type, ";") === mediaType;
+    const predicate = (el: Link) => new MediaType(el.type).matches(mediaType);
     return this.find(predicate);
   }
 
   public filterByMediaType(mediaType: string): Array<Link> {
-    const predicate = (el: Link) => splitString(el.type, ";") === mediaType;
+    const predicate = (el: Link) => new MediaType(el.type).matches(mediaType);
     return this.filter(predicate);
   }
 
   public filterByMediaTypes(mediaTypes: Array<string>): Array<Link> {
-    const predicate = (el: Link) => mediaTypes.includes(splitString(el.type, ";"));
+    const predicate = (el: Link) => {
+      for (const mediaType of mediaTypes) {
+        return new MediaType(el.type).matches(mediaType);
+      }
+    };
     return this.filter(predicate);
   }
 
   public allAreAudio(): boolean {
-    const predicate = (el: Link) => el.type.startsWith("audio");
+    const predicate = (el: Link) => new MediaType(el.type).isAudio();
     return this.every(predicate);
   }
 
   public allAreBitmap(): boolean {
-    const predicate = (el: Link) => el.type.startsWith("image");
+    const predicate = (el: Link) => new MediaType(el.type).isBitmap();
     return this.every(predicate);
   }
 
   public allAreHTML(): boolean {
-    const mediaTypes = ["text/html", "application/xhtml+xml"];
-    const predicate = (el: Link) => mediaTypes.includes(splitString(el.type, ";"));
+    const predicate = (el: Link) => new MediaType(el.type).isHTML();
     return this.every(predicate);
   }
 
   public allAreVideo(): boolean {
-    const predicate = (el: Link) => el.type.startsWith("video");
+    const predicate = (el: Link) => new MediaType(el.type).isVideo();
     return this.every(predicate);
   }
 
-  public allMatchMediaType(mediaType: string | Array<string>): boolean {
-    if (Array.isArray(mediaType)) {
-      return this.every((el: Link) => mediaType.includes(splitString(el.type, ";")));
+  public allMatchMediaType(mediaTypes: string | Array<string>): boolean {
+    if (Array.isArray(mediaTypes)) {
+      return this.every((el: Link) => {
+        for (const mediaType of mediaTypes) {
+          return new MediaType(el.type).matches(mediaType);
+        }
+      });
     } else {
-      return this.every((el: Link) => splitString(el.type, ";") === mediaType);
+      return this.every((el: Link) => new MediaType(el.type).matches(mediaTypes));
     }
   }
 }
