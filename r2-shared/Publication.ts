@@ -1,11 +1,20 @@
-import PublicationManifest from "./PublicationManifest";
 import Metadata from "./Metadata";
+import PublicationManifest from "./PublicationManifest";
+import Store from "../Store/Store";
 import { Link, Links } from "./Link";
 
 export default class Publication {
   public manifest: PublicationManifest;
   public fetcher: any; // tmp
   public services: any; // tmp
+
+  // Aliases
+  public context: Array<string> = this.manifest.context;
+  public metadata: Metadata = this.manifest.metadata;
+  public links: Links = this.manifest.links;
+  public readingOrder: Links = this.manifest.readingOrder;
+  public resources: Links = this.manifest.resources;
+  public tableOfContents: Links = this.manifest.tableOfContents;
 
   constructor(manifest: PublicationManifest, fetcher: any, services: any) {
     this.manifest = manifest;
@@ -70,5 +79,47 @@ export default class Publication {
 
   public linksWithRel(rel: string): Array<Link> {
     return this.manifest.linksWithRel(rel);
+  }
+
+  // Deprecations
+
+  public static async getManifest(manifestUrl: string, store?: Store): Promise<PublicationManifest> {
+    return PublicationManifest.getManifest(manifestUrl, store)
+  };
+
+  public getStartLink(): Link { 
+    return this.manifest.getStartLink();
+  }
+
+  public getPreviousSpineItem(href: string): Link {
+    return this.manifest.getPreviousSpineItem(href);
+  }
+
+  public getNextSpineItem(href: string): Link {
+    return this.manifest.getNextSpineItem(href);
+  }
+
+  public getSpineItem(href: string): Link {
+    return this.manifest.getSpineItem(href);
+  }
+
+  public getSpineIndex(href: string): number {
+    return this.manifest.getSpineIndex(href);
+  }
+
+  public getAbsoluteHref(href: string): string {
+    return this.manifest.getAbsoluteHref(href);
+  }
+
+  public getRelativeHref(href: string): string {
+    return this.manifest.getRelativeHref(href);
+  }
+  
+  public getTOCItemAbsolute(href: string): Link {
+    return this.manifest.getTOCItemAbsolute(href);
+  }
+  
+  public getTOCItem(href: string): Link {
+    return this.manifest.getTOCItem(href);
   }
 }
