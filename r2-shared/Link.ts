@@ -3,8 +3,6 @@ import { PresentationProperties } from "./presentation/Presentation";
 import { Properties } from "./epub/Properties";
 import { splitString } from "./utils/splitString";
 
-type Predicate = (el: Link) => boolean;
-
 /*  
     Keeping as ref list of values we know are currently used, per webpub doc:
     https://github.com/readium/webpub-manifest/blob/master/relationships.md
@@ -75,31 +73,31 @@ export class Links extends Array<Link> {
   }
 
   public allAreAudio(): boolean {
-    const predicate = (el: Link) => el["type"].startsWith("audio");
+    const predicate = (el: Link) => el.type.startsWith("audio");
     return this.every(predicate);
   }
 
   public allAreBitmap(): boolean {
-    const predicate = (el: Link) => el["type"].startsWith("image");
+    const predicate = (el: Link) => el.type.startsWith("image");
     return this.every(predicate);
   }
 
   public allAreHTML(): boolean {
     const mediaTypes = ["text/html", "application/xhtml+xml"];
-    const predicate = (el: Link) => mediaTypes.includes(splitString(el["type"], ";"));
+    const predicate = (el: Link) => mediaTypes.includes(splitString(el.type, ";"));
     return this.every(predicate);
   }
 
   public allAreVideo(): boolean {
-    const predicate = (el: Link) => el["type"].startsWith("video");
+    const predicate = (el: Link) => el.type.startsWith("video");
     return this.every(predicate);
   }
 
   public allMatchMediaType(mediaType: string | Array<string>): boolean {
     if (Array.isArray(mediaType)) {
-      return this.every((el: Link) => mediaType.includes(splitString(el["type"], ";")));
+      return this.every((el: Link) => mediaType.includes(splitString(el.type, ";")));
     } else {
-      return this.every((el: Link) => splitString(el["type"], ";") === mediaType);
+      return this.every((el: Link) => splitString(el.type, ";") === mediaType);
     }
   }
 }

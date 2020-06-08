@@ -143,6 +143,8 @@ export default class PublicationManifest {
     return findItem(href, this.tableOfContents);
   }
 
+  // Helpers
+
   public linkWithRel(rel: string): Link | null {
     const links: Array<Links> = [this.readingOrder, this.resources, this.links];
     let result = null;
@@ -154,7 +156,7 @@ export default class PublicationManifest {
       }
     }
 
-    return null;
+    return result;
   }
 
   public linksWithRel(rel: string): Array<Link> {
