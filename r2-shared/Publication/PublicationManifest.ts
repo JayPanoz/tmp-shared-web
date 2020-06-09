@@ -26,7 +26,7 @@ export default class PublicationManifest {
   // Getting/Setting Manifest
 
   public static async requestManifest(manifestUrl: string, store?: Store): Promise<PublicationManifest> {
-    const fetchRetry = async (attempts: number, delay: number): Promise<PublicationManifest> => {
+    const fetchRetry = async (attempts: number, delay: number): Promise<any> => {
       try {
         const response = await window.fetch(manifestUrl, { credentials: "same-origin" });
         if (!response.ok) {

@@ -16,7 +16,7 @@
     "preserveConstEnums": true,
     "strictNullChecks": false,
     "target": "es6",
-    "lib": ["es2019", "DOM"]
+    "lib": ["es2019", "DOM", "DOM.Iterable"]
   },
   "include": [
     "r2-shared/**/*"

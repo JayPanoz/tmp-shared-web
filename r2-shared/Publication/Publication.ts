@@ -43,13 +43,15 @@ export default class Publication {
       }
 
       const children: Array<Links> = links.flatMap(item => {
-        let arr = []; 
-        if (item.alternate) {
-          arr.push(new Links(item.alternate))
-        } 
-        if (item.children) {
-          arr.push(new Links(item.children))
-        } 
+        let arr = [];
+        for (const link of item) {
+          if (link.alternate) {
+            arr.push(link.alternate)
+          }
+          if (link.children) {
+            arr.push(link.children)
+          }
+        }
         return arr;
       });
 

@@ -2,7 +2,6 @@ import MediaType from "../Format/MediaType";
 import { Encrypted } from "./Encrypted";
 import { PresentationProperties } from "./presentation/Presentation";
 import { Properties } from "./epub/Properties";
-import { splitString } from "../utils/splitString";
 
 /*  
     Keeping as ref list of values we know are currently used, per webpub doc:
@@ -16,7 +15,7 @@ interface LinkProperties extends PresentationProperties {
   mediaOverlay?: string;
 }
 
-export interface Link {
+export interface ILink {
   href: string;
   templated?: boolean;
   type?: string;
@@ -28,13 +27,72 @@ export interface Link {
   duration?: number;
   bitrate?: number;
   language?: string;
-  alternate?: Array<Link>;
-  children?: Array<Link>;
+  alternate?: Array<ILink>;
+  children?: Array<ILink>;
+}
+
+export class Link implements ILink {
+  public href: string;
+  public templated?: boolean;
+  public type?: string;
+  public title?: string;
+  public rel?: string;
+  public properties?: LinkProperties;
+  public height?: number;
+  public width?: number;
+  public duration?: number;
+  public bitrate?: number;
+  public language?: string;
+  public alternate?: Links;
+  public children?: Links;
+
+  constructor(link: ILink) {
+    this.href = link.href;
+    this.templated = link.templated;
+    this.type = link.type;
+    this.rel = link.rel;
+    this.properties = link.properties;
+    this.height = link.height;
+    this.width = link.width;
+    this.duration = link.duration;
+    this.bitrate = link.bitrate;
+    this.language = link.language;
+    this.alternate = new Links(link.alternate);
+    this.children = new Links(link.children);
+  }
+
+  public urlRelativeTo(baseUrl?: string): string {
+    if (this.href.includes(baseUrl)) {
+      return this.href;
+    } else {
+      return new URL(this.href, baseUrl).href;
+    }
+  }
+
+  public templateParameters(): Array<string> {
+    let result = [];
+    if (this.templated) {
+      const paramString = this.href.split("?")[1];
+      const params = new URLSearchParams(paramString).keys();
+      for (const p of params) {
+        result.push(p);
+      }
+    }
+    return result;
+  }
+
+  /*
+  public expandTemplate(parameters: Array<string>): Link {
+    if (this.templated) {
+      
+    }
+    return this;
+  } */
 }
 
 export class Links extends Array<Link> {
-  constructor(items?: Array<Link>) {
-    super(...items);
+  constructor(items?: Array<ILink>) {
+    super(...items.map(item => new Link(item)));
     Object.setPrototypeOf(this, Links.prototype);
   }
 
@@ -73,6 +131,7 @@ export class Links extends Array<Link> {
       for (const mediaType of mediaTypes) {
         return new MediaType(el.type).matches(mediaType);
       }
+      return false;
     };
     return this.filter(predicate);
   }
@@ -103,6 +162,7 @@ export class Links extends Array<Link> {
         for (const mediaType of mediaTypes) {
           return new MediaType(el.type).matches(mediaType);
         }
+        return false;
       });
     } else {
       return this.every((el: Link) => new MediaType(el.type).matches(mediaTypes));
